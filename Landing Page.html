@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard – Log in / Sign up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap">
+<style>
+  /* ====== Palitan lang ang mga kulay dito para ma-rebrand ====== */
+  :root{
+    --bg:#ffffff; --panel:#000000; --panel-2:#000000;
+    --ink:#14202e; --muted:#5d6b7c; --line:#d5dce6;
+    --accent:#1f6feb; --accent-ink:#fff; --bar:#7fb2ff;
+    --danger:#c62f3e; --ok:#1a8f5a;
+    --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;display:grid;place-items:center;padding:24px}
+  .shell{width:min(980px,100%);display:grid;grid-template-columns:1fr 1fr;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 20px 50px rgba(14,42,71,.14)}
+
+  /* Brand side */
+  .brand{background:linear-gradient(160deg,var(--panel),var(--panel-2));color:#fff;padding:44px;display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+  .logo{font-weight:800;font-size:20px;letter-spacing:-.02em}
+  .brand h2{font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-.02em;max-width:16ch}
+  .brand p{color:#bcd0e6;margin-top:12px;font-size:15px;line-height:1.55;max-width:34ch}
+  .preview{display:flex;align-items:flex-end;gap:10px;height:110px}
+  .preview span{flex:1;background:var(--bar);border-radius:6px 6px 0 0;opacity:.85}
+
+  /* Form side */
+  .form-side{padding:44px;display:flex;flex-direction:column;justify-content:center}
+  .tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:10px;margin-bottom:28px}
+  .tabs button{flex:1;border:0;background:none;font:inherit;font-weight:600;font-size:14px;color:var(--muted);padding:10px;border-radius:8px;cursor:pointer}
+  .tabs button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:14px;margin:6px 0 22px}
+  form[hidden]{display:none}
+  .field{margin-bottom:16px}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .input{position:relative}
+  input[type=text],input[type=email],input[type=password]{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid rgba(31,111,235,.35);outline-offset:1px;border-color:var(--accent)}
+  input[aria-invalid="true"]{border-color:var(--danger)}
+  .toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px 8px}
+  .err{color:var(--danger);font-size:12.5px;margin-top:5px;min-height:0}
+  .row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:20px}
+  .row label{display:flex;gap:8px;align-items:center;font-weight:500;margin:0}
+  .row a,.switch a{color:var(--accent);font-weight:600;text-decoration:none}
+  .row a:hover,.switch a:hover{text-decoration:underline}
+  .meter{display:flex;gap:4px;margin-top:8px}
+  .meter i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+  .meter-text{font-size:12px;color:var(--muted);margin-top:5px}
+  .btn{width:100%;font:inherit;font-weight:700;font-size:15px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:13px;cursor:pointer}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.6;cursor:wait}
+  .status{font-size:13.5px;margin-top:14px;min-height:20px}
+  .status.ok{color:var(--ok)} .status.bad{color:var(--danger)}
+  .switch{text-align:center;font-size:13.5px;color:var(--muted);margin-top:18px}
+
+  @media (max-width:760px){
+    .shell{grid-template-columns:1fr}
+    .brand{padding:28px}
+    .brand h2{font-size:24px}
+    .preview{height:60px}
+    .form-side{padding:28px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <aside class="brand" aria-hidden="false">
+    <div class="logo">The Identity's Dashboard</div>
+    <div>
+      <h2>Lahat ng numero mo, nasa iisang lugar.</h2>
+      <p>Mag-log in para makita ang reports, analytics, at team activity mo.</p>
+    </div>
+    <div class="preview" aria-hidden="true">
+      <span style="height:35%"></span><span style="height:55%"></span><span style="height:42%"></span>
+      <span style="height:78%"></span><span style="height:64%"></span><span style="height:100%"></span>
+    </div>
+  </aside>
+
+  <section class="form-side">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-login" aria-selected="true" aria-controls="login-form">Log in</button>
+      <button role="tab" id="tab-signup" aria-selected="false" aria-controls="signup-form">Sign up</button>
+    </div>
+
+    <!-- LOG IN -->
+    <form id="login-form" role="tabpanel" aria-labelledby="tab-login" novalidate>
+      <h1>Welcome back</h1>
+      <p class="sub">Create. Personalize. Stand out.</p>
+
+      <div class="field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" name="email" autocomplete="email" placeholder="you@company.com" required>
+        <div class="err" data-err="login-email"></div>
+      </div>
+
+      <div class="field">
+        <label for="login-pass">Password</label>
+        <div class="input">
+          <input type="password" id="login-pass" name="password" autocomplete="current-password" required>
+          <button type="button" class="toggle" data-toggle="login-pass">Show</button>
+        </div>
+        <div class="err" data-err="login-pass"></div>
+      </div>
+
+      <div class="row">
+        <label><input type="checkbox" name="remember"> Remember me</label>
+        <a href="#forgot">Forgot password?</a>
+      </div>
+
+      <button class="btn" type="submit">Log in</button>
+      <div class="status" role="status" aria-live="polite"></div>
+      <p class="switch">Wala pang account? <a href="#" data-go="signup">Sign up</a></p>
+    </form>
+
+    <!-- SIGN UP -->
+    <form id="signup-form" role="tabpanel" aria-labelledby="tab-signup" novalidate hidden>
+      <h1>Create your Identity.</h1>
+      <p class="sub">Create. Personalize. Stand out.</p>
+
+      <div class="field">
+        <label for="su-name">Full name</label>
+        <input type="text" id="su-name" name="name" autocomplete="name" placeholder="Juan Dela Cruz" required>
+        <div class="err" data-err="su-name"></div>
+      </div>
+
+      <div class="field">
+        <label for="su-email">Email</label>
+        <input type="email" id="su-email" name="email" autocomplete="email" placeholder="you@company.com" required>
+        <div class="err" data-err="su-email"></div>
+      </div>
+
+      <div class="field">
+        <label for="su-pass">Password</label>
+        <div class="input">
+          <input type="password" id="su-pass" name="password" autocomplete="new-password" required>
+          <button type="button" class="toggle" data-toggle="su-pass">Show</button>
+        </div>
+        <div class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="meter-text" id="meter-text">At least 8 characters</div>
+        <div class="err" data-err="su-pass"></div>
+      </div>
+
+      <div class="field">
+        <label for="su-confirm">Confirm password</label>
+        <input type="password" id="su-confirm" name="confirm" autocomplete="new-password" required>
+        <div class="err" data-err="su-confirm"></div>
+      </div>
+
+      <div class="row" style="margin-bottom:18px">
+        <label><input type="checkbox" id="su-terms" required> Sang-ayon ako sa <a href="#terms">Terms</a></label>
+      </div>
+      <div class="err" data-err="su-terms" style="margin:-12px 0 12px"></div>
+
+      <button class="btn" type="submit">Create account</button>
+      <div class="status" role="status" aria-live="polite"></div>
+      <p class="switch">May account na? <a href="#" data-go="login">Log in</a></p>
+    </form>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const forms = { login: $('#login-form'), signup: $('#signup-form') };
+  const tabs  = { login: $('#tab-login'),  signup: $('#tab-signup') };
+
+  /* ---------- Tab switching ---------- */
+  function show(which) {
+    for (const k in forms) {
+      forms[k].hidden = k !== which;
+      tabs[k].setAttribute('aria-selected', k === which);
+    }
+  }
+  tabs.login.onclick  = () => show('login');
+  tabs.signup.onclick = () => show('signup');
+  $$('[data-go]').forEach(a => a.onclick = e => { e.preventDefault(); show(a.dataset.go); });
+
+  /* ---------- Show / hide password ---------- */
+  $$('[data-toggle]').forEach(btn => btn.onclick = () => {
+    const input = document.getElementById(btn.dataset.toggle);
+    const hide = input.type === 'text';
+    input.type = hide ? 'password' : 'text';
+    btn.textContent = hide ? 'Show' : 'Hide';
+  });
+
+  /* ---------- Validation helpers ---------- */
+  const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  function setErr(id, msg) {
+    const el = $(`[data-err="${id}"]`);
+    const input = document.getElementById(id);
+    el.textContent = msg || '';
+    if (input && input.type !== 'checkbox') input.setAttribute('aria-invalid', !!msg);
+    return !msg;
+  }
+  function status(form, text, ok) {
+    const s = $('.status', form);
+    s.textContent = text;
+    s.className = 'status ' + (ok ? 'ok' : 'bad');
+  }
+
+  /* ---------- Password strength ---------- */
+  function score(p) {
+    let s = 0;
+    if (p.length >= 8) s++;
+    if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+    if (/\d/.test(p)) s++;
+    if (/[^A-Za-z0-9]/.test(p) || p.length >= 12) s++;
+    return s;
+  }
+  const labels = ['At least 8 characters', 'Weak', 'Okay', 'Good', 'Strong'];
+  const colors = ['', '#c62f3e', '#e0a100', '#1f6feb', '#1a8f5a'];
+  $('#su-pass').addEventListener('input', e => {
+    const s = score(e.target.value);
+    $$('.meter i').forEach((bar, i) => bar.style.background = i < s ? colors[s] : '');
+    $('#meter-text').textContent = e.target.value ? labels[s] : labels[0];
+  });
+
+  /* ---------- Submit (ikabit sa backend mo dito) ---------- */
+  // Palitan ito ng totoong API call, hal. fetch('/api/login', {...})
+  async function fakeRequest(path, payload) {
+    await new Promise(r => setTimeout(r, 700));
+    return { ok: true };
+  }
+
+  forms.login.addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = $('#login-email').value.trim();
+    const pass = $('#login-pass').value;
+    const a = setErr('login-email', emailOk(email) ? '' : 'Maglagay ng valid na email.');
+    const b = setErr('login-pass', pass ? '' : 'Ilagay ang password.');
+    if (!(a && b)) return;
+
+    const btn = $('.btn', forms.login);
+    btn.disabled = true; btn.textContent = 'Logging in…';
+    try {
+      const res = await fakeRequest('/api/login', { email, pass });
+      if (!res.ok) throw new Error();
+      status(forms.login, 'Success! Papunta na sa dashboard…', true);
+      // window.location.href = '/dashboard';
+    } catch {
+      status(forms.login, 'Mali ang email o password. Subukan ulit.', false);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Log in';
+    }
+  });
+
+  forms.signup.addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = $('#su-name').value.trim();
+    const email = $('#su-email').value.trim();
+    const pass = $('#su-pass').value;
+    const conf = $('#su-confirm').value;
+    const ok = [
+      setErr('su-name', name.length >= 2 ? '' : 'Ilagay ang buong pangalan mo.'),
+      setErr('su-email', emailOk(email) ? '' : 'Maglagay ng valid na email.'),
+      setErr('su-pass', pass.length >= 8 ? '' : 'Dapat at least 8 characters.'),
+      setErr('su-confirm', conf === pass ? '' : 'Hindi magkapareho ang passwords.'),
+      setErr('su-terms', $('#su-terms').checked ? '' : 'I-check ito para magpatuloy.')
+    ].every(Boolean);
+    if (!ok) return;
+
+    const btn = $('.btn', forms.signup);
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    try {
+      const res = await fakeRequest('/api/signup', { name, email, pass });
+      if (!res.ok) throw new Error();
+      status(forms.signup, 'Account created! Pwede ka nang mag-log in.', true);
+      setTimeout(() => show('login'), 1200);
+    } catch {
+      status(forms.signup, 'May error. Subukan ulit mamaya.', false);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Create account';
+    }
+  });
+})();
+</script>
+</body>
+</html>
